@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Personal Page</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            margin-top: 30px;
+        }
+        header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 20px;
+        }
+        .profile-img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 30px;
+            border: 3px solid #3498db;
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        .section {
+            margin-bottom: 30px;
+        }
+        .message-form {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 20px;
+        }
+        .message-input {
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            resize: vertical;
+            min-height: 80px;
+        }
+        .message-author {
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .submit-btn {
+            padding: 10px 15px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .submit-btn:hover {
+            background-color: #2980b9;
+        }
+        .messages {
+            margin-top: 20px;
+        }
+        .message {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            border-left: 3px solid #3498db;
+        }
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .counter {
+            text-align: center;
+            font-weight: bold;
+            color: #3498db;
+            font-size: 1.2rem;
+            background-color: #ecf0f1;
+            padding: 10px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="app"></div>
+    </div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        function App() {
+            const [messages, setMessages] = useState([]);
+            const [newMessage, setNewMessage] = useState('');
+            const [author, setAuthor] = useState('');
+            const [visitorCount, setVisitorCount] = useState(0);
+
+            useEffect(() => {
+                // Increment visitor count when page loads
+                setVisitorCount(prevCount => prevCount + 1);
+                
+                // Load messages from localStorage if available
+                const savedMessages = localStorage.getItem('messages');
+                if (savedMessages) {
+                    setMessages(JSON.parse(savedMessages));
+                }
+            }, []);
+
+            // Save messages to localStorage whenever they change
+            useEffect(() => {
+                localStorage.setItem('messages', JSON.stringify(messages));
+            }, [messages]);
+
+            const handleSubmit = (e) => {
+                e.preventDefault();
+                if (newMessage.trim() && author.trim()) {
+                    const newMessageObj = {
+                        id: Date.now(),
+                        text: newMessage,
+                        author: author,
+                        date: new Date().toLocaleString()
+                    };
+                    setMessages([newMessageObj, ...messages]);
+                    setNewMessage('');
+                }
+            };
+
+            return (
+                <div>
+                    <header>
+                        <img 
+                            src="https://i.imgur.com/FwPwL7K.png" 
+                            alt="Profile placeholder" 
+                            className="profile-img"
+                        />
+                        <div>
+                            <h1>程育棋</h1>
+                            <p>Web Developer R13921A21&nbsp;&nbsp;(student at NTU)</p>
+                        </div>
+                    </header>
+
+                    <div className="section">
+                        <h2>About Me</h2>
+                        <p>
+                            Hello! My name is Richard, 24 years old, graduated from NTHU CS, I'm a passionate web developer with expertise in HTML, CSS, React, and JavaScript.
+                            I love creating user-friendly interfaces and solving complex problems through clean, efficient code.
+                            When I'm not coding, you can find me working out at the gym or playing games at home.
+                        </p>
+                        <p>
+                            I believe in continuous learning and am currently exploring machine learning and AI technologies
+                            to expand my skill set. I'm always open to new challenges and collaboration opportunities.
+                        </p>
+                    </div>
+
+                    <div className="section">
+                        <h2>Message Board</h2>
+                        <form className="message-form" onSubmit={handleSubmit}>
+                            <input
+                                type="text"
+                                placeholder="Your Name"
+                                value={author}
+                                onChange={(e) => setAuthor(e.target.value)}
+                                className="message-author"
+                                required
+                            />
+                            <textarea
+                                placeholder="Leave a message..."
+                                value={newMessage}
+                                onChange={(e) => setNewMessage(e.target.value)}
+                                className="message-input"
+                                required
+                            />
+                            <button type="submit" className="submit-btn">Post Message</button>
+                        </form>
+
+                        <div className="messages">
+                            {messages.length > 0 ? (
+                                messages.map(message => (
+                                    <div key={message.id} className="message">
+                                        <div className="message-header">
+                                            <span>{message.author}</span>
+                                            <span>{message.date}</span>
+                                        </div>
+                                        <p>{message.text}</p>
+                                    </div>
+                                ))
+                            ) : (
+                                <p>No messages yet. Be the first to leave a message!</p>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="counter">
+                        Visitors: {visitorCount}
+                    </div>
+                </div>
+            );
+        }
+
+        ReactDOM.render(<App />, document.getElementById('app'));
+    </script>
+</body>
+</html>
